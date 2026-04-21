@@ -33,15 +33,14 @@
   }
 
   const tabs = [
-    { id: 'announcements', label: 'Announcements', shortLabel: 'Posts',   icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z' },
-    { id: 'quizzes',       label: 'Quizzes',       shortLabel: 'Quizzes', icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z' },
-    { id: 'attendance',    label: 'Attendance',    shortLabel: 'Attend.', icon: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z' },
-    { id: 'students',      label: 'Students',      shortLabel: 'Students',icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z' },
+    { id: 'announcements', label: 'Announcements', shortLabel: 'Posts',    icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z' },
+    { id: 'quizzes',       label: 'Quizzes',       shortLabel: 'Quizzes',  icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z' },
+    { id: 'attendance',    label: 'Attendance',    shortLabel: 'Attend.',  icon: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z' },
+    { id: 'students',      label: 'Students',      shortLabel: 'Students', icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z' },
   ]
 
   const activeTabMeta = $derived(tabs.find(t => t.id === activeTab)!)
 
-  // Group announcements by date label
   function dateBucket(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime()
     const days = Math.floor(diff / 86400000)
@@ -66,7 +65,6 @@
 
   <!-- Top command bar -->
   <nav class="bg-[#534AB7] h-11 flex items-center px-3 gap-2.5 shrink-0">
-    <!-- Brand -->
     <div class="flex items-center gap-2">
       <div class="w-7 h-7 bg-[#3C3489] rounded-lg flex items-center justify-center shrink-0">
         <svg class="w-3.5 h-3.5 fill-[#EEEDFE]" viewBox="0 0 24 24">
@@ -77,11 +75,7 @@
         attend<span class="text-[#AFA9EC]">ify</span>
       </span>
     </div>
-
-    <!-- Divider -->
     <div class="w-px h-5 bg-[#AFA9EC] opacity-40 mx-1"></div>
-
-    <!-- Breadcrumb -->
     <div class="flex items-center gap-1.5 text-[12px]">
       <a
         href={data.isTeacher ? '/dashboard/teacher' : '/dashboard/student'}
@@ -90,8 +84,6 @@
       <span class="text-[#AFA9EC] opacity-60">/</span>
       <span class="text-[#EEEDFE] font-medium">{data.cls.name}</span>
     </div>
-
-    <!-- Right side -->
     <div class="ml-auto flex items-center gap-2.5">
       <span class="text-[11px] text-[#C4C0F5] hidden sm:block">{data.profile?.full_name}</span>
       <div class="w-7 h-7 rounded-full bg-[#7F77DD] border-[1.5px] border-[#AFA9EC] flex items-center justify-center text-[10px] font-semibold text-[#EEEDFE]">
@@ -106,7 +98,6 @@
     </div>
   </nav>
 
-  <!-- Body: rail + sidebar + main -->
   <div class="flex flex-1 overflow-hidden">
 
     <!-- Icon rail -->
@@ -115,17 +106,13 @@
         <button
           onclick={() => activeTab = tab.id}
           class="w-10 h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors
-            {activeTab === tab.id
-              ? 'bg-white/15'
-              : 'hover:bg-white/8'}"
+            {activeTab === tab.id ? 'bg-white/15' : 'hover:bg-white/8'}"
           title={tab.label}
         >
           <svg
             class="w-[18px] h-[18px] transition-colors {activeTab === tab.id ? 'fill-[#EEEDFE]' : 'fill-[#AFA9EC]'}"
             viewBox="0 0 24 24"
-          >
-            <path d={tab.icon}/>
-          </svg>
+          ><path d={tab.icon}/></svg>
           <span class="text-[9px] font-medium leading-none {activeTab === tab.id ? 'text-[#EEEDFE]' : 'text-[#AFA9EC]'}">
             {tab.shortLabel}
           </span>
@@ -138,7 +125,6 @@
 
     <!-- Channel sidebar -->
     <aside class="w-56 bg-white border-r border-[#D3D1C7] flex flex-col overflow-hidden shrink-0">
-      <!-- Class info -->
       <div class="p-3.5 border-b border-[#F1EFE8]">
         <div class="w-9 h-9 rounded-lg bg-[#EEEDFE] flex items-center justify-center mb-2.5">
           <svg class="w-[18px] h-[18px] fill-[#7F77DD]" viewBox="0 0 24 24">
@@ -154,17 +140,13 @@
           <span class="bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2 py-0.5 rounded-full tracking-wider">{data.cls.code}</span>
         </div>
       </div>
-
-      <!-- Nav list -->
       <nav class="flex-1 overflow-y-auto py-2">
         <div class="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#B4B2A9]">Channels</div>
         {#each tabs as tab}
           <button
             onclick={() => activeTab = tab.id}
             class="w-full flex items-center gap-2.5 px-3.5 py-[7px] text-left relative cursor-pointer transition-colors
-              {activeTab === tab.id
-                ? 'bg-[#EEEDFE] text-[#534AB7]'
-                : 'text-[#5F5E5A] hover:bg-[#F1EFE8]'}"
+              {activeTab === tab.id ? 'bg-[#EEEDFE] text-[#534AB7]' : 'text-[#5F5E5A] hover:bg-[#F1EFE8]'}"
           >
             {#if activeTab === tab.id}
               <div class="absolute left-0 top-1 bottom-1 w-[3px] bg-[#7F77DD] rounded-r"></div>
@@ -172,9 +154,7 @@
             <svg
               class="w-3.5 h-3.5 shrink-0 {activeTab === tab.id ? 'fill-[#534AB7]' : 'fill-[#888780]'}"
               viewBox="0 0 24 24"
-            >
-              <path d={tab.icon}/>
-            </svg>
+            ><path d={tab.icon}/></svg>
             <span class="text-[12.5px] {activeTab === tab.id ? 'font-semibold' : ''}">{tab.label}</span>
           </button>
         {/each}
@@ -195,33 +175,31 @@
           <div class="text-[14px] font-semibold text-[#2C2C2A]">{activeTabMeta.label}</div>
           {#if activeTab === 'announcements'}
             <div class="text-[11px] text-[#888780]">{data.announcements.length} post{data.announcements.length !== 1 ? 's' : ''} · {data.cls.name}</div>
+          {:else if activeTab === 'attendance'}
+            <div class="text-[11px] text-[#888780]">{data.attendanceSessions.length} session{data.attendanceSessions.length !== 1 ? 's' : ''} · {data.cls.name}</div>
           {/if}
         </div>
+        <!-- Header action buttons -->
         {#if data.isTeacher && activeTab === 'announcements'}
           <div class="ml-auto">
             <button
               onclick={() => showPostModal = true}
               class="flex items-center gap-1.5 bg-[#7F77DD] hover:bg-[#534AB7] text-[#EEEDFE] text-[12px] font-semibold px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
             >
-              <svg class="w-3 h-3 fill-[#EEEDFE]" viewBox="0 0 24 24">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-              </svg>
+              <svg class="w-3 h-3 fill-[#EEEDFE]" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
               New post
             </button>
           </div>
         {/if}
       </div>
 
-      <!-- Tab content -->
+      <!-- ── ANNOUNCEMENTS ── -->
       {#if activeTab === 'announcements'}
-        <!-- Feed -->
         <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2.5">
           {#if data.announcements.length === 0}
             <div class="flex flex-col items-center justify-center h-full gap-3 text-center py-16">
               <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24">
-                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                </svg>
+                <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
               </div>
               <div>
                 <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">no announcements yet</p>
@@ -232,16 +210,13 @@
             </div>
           {:else}
             {#each groupedAnnouncements() as group}
-              <!-- Date divider -->
               <div class="flex items-center gap-3 my-1">
                 <div class="flex-1 h-px bg-[#D3D1C7]"></div>
                 <span class="text-[11px] text-[#888780] whitespace-nowrap">{group.label}</span>
                 <div class="flex-1 h-px bg-[#D3D1C7]"></div>
               </div>
-
               {#each group.posts as post}
                 <div class="bg-white border border-[#D3D1C7] hover:border-[#AFA9EC] rounded-xl p-4 transition-colors">
-                  <!-- Post header -->
                   <div class="flex items-center gap-2.5 mb-3">
                     <div class="w-8 h-8 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[10px] font-semibold text-[#534AB7] shrink-0">
                       {getInitials((post.profiles as any)?.full_name ?? '')}
@@ -250,27 +225,15 @@
                       <div class="text-[13px] font-semibold text-[#2C2C2A]">{(post.profiles as any)?.full_name}</div>
                       <div class="text-[11px] text-[#888780]">{timeAgo(post.created_at)}</div>
                     </div>
-                    <span class="ml-auto bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
-                      announcement
-                    </span>
+                    <span class="ml-auto bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">announcement</span>
                   </div>
-
-                  <!-- Post body -->
                   <div class="text-[13.5px] font-semibold text-[#2C2C2A] mb-1.5">{post.title}</div>
                   <div class="text-[12.5px] text-[#5F5E5A] leading-relaxed">{post.content}</div>
-
-                  <!-- Reactions row -->
                   <div class="flex items-center gap-2 mt-3 pt-2.5 border-t border-[#F1EFE8]">
-                    <button class="flex items-center gap-1.5 bg-[#F1EFE8] hover:bg-[#EEEDFE] border border-[#D3D1C7] rounded-full px-2.5 py-1 text-[11px] text-[#5F5E5A] cursor-pointer transition-colors">
-                      👍
-                    </button>
-                    <button class="flex items-center gap-1.5 bg-[#F1EFE8] hover:bg-[#EEEDFE] border border-[#D3D1C7] rounded-full px-2.5 py-1 text-[11px] text-[#5F5E5A] cursor-pointer transition-colors">
-                      👀
-                    </button>
+                    <button class="flex items-center gap-1.5 bg-[#F1EFE8] hover:bg-[#EEEDFE] border border-[#D3D1C7] rounded-full px-2.5 py-1 text-[11px] text-[#5F5E5A] cursor-pointer transition-colors">👍</button>
+                    <button class="flex items-center gap-1.5 bg-[#F1EFE8] hover:bg-[#EEEDFE] border border-[#D3D1C7] rounded-full px-2.5 py-1 text-[11px] text-[#5F5E5A] cursor-pointer transition-colors">👀</button>
                     <button class="ml-auto flex items-center gap-1.5 text-[11px] text-[#888780] hover:text-[#2C2C2A] hover:bg-[#F1EFE8] px-2 py-1 rounded-md transition-colors cursor-pointer">
-                      <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
-                        <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
-                      </svg>
+                      <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
                       Reply
                     </button>
                   </div>
@@ -279,8 +242,6 @@
             {/each}
           {/if}
         </div>
-
-        <!-- Compose bar (teacher only) -->
         {#if data.isTeacher}
           <div class="bg-white border-t border-[#D3D1C7] px-5 py-2.5 shrink-0">
             <button
@@ -292,21 +253,17 @@
               </div>
               <span class="text-[12px] text-[#B4B2A9] flex-1">Share something with your class…</span>
               <div class="w-6 h-6 rounded-md bg-[#7F77DD] flex items-center justify-center">
-                <svg class="w-3 h-3 fill-[#EEEDFE]" viewBox="0 0 24 24">
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
+                <svg class="w-3 h-3 fill-[#EEEDFE]" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
               </div>
             </button>
           </div>
         {/if}
 
-      <!-- Quizzes placeholder -->
+      <!-- ── QUIZZES ── -->
       {:else if activeTab === 'quizzes'}
         <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-16">
           <div class="w-11 h-11 bg-[#FAEEDA] rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 fill-[#EF9F27]" viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-            </svg>
+            <svg class="w-5 h-5 fill-[#EF9F27]" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
           </div>
           <div>
             <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">quizzes coming soon</p>
@@ -314,27 +271,174 @@
           </div>
         </div>
 
-      <!-- Attendance placeholder -->
+      <!-- ── ATTENDANCE ── -->
       {:else if activeTab === 'attendance'}
-        <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-16">
-          <div class="w-11 h-11 bg-[#E1F5EE] rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 fill-[#1D9E75]" viewBox="0 0 24 24">
-              <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
-            </svg>
-          </div>
-          <div>
-            <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">attendance coming soon</p>
-            <p class="text-[12px] text-[#888780]">this feature is being built</p>
-          </div>
+        <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
+
+          <!-- Teacher: start session form -->
+          {#if data.isTeacher}
+            <div class="bg-white border border-[#D3D1C7] rounded-xl p-5">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-6 h-6 rounded-md bg-[#E1F5EE] flex items-center justify-center">
+                  <svg class="w-3.5 h-3.5 fill-[#1D9E75]" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </div>
+                <span class="text-[13px] font-semibold text-[#2C2C2A]">Start new session</span>
+              </div>
+              <form
+                method="POST"
+                action="?/startAttendance"
+                use:enhance={() => {
+                  return async ({ result, update }) => {
+                    if (result.type !== 'failure') await update()
+                  }
+                }}
+              >
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Label</label>
+                    <input
+                      name="label"
+                      type="text"
+                      placeholder="e.g. Morning session"
+                      class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[12.5px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Start time</label>
+                    <input
+                      name="start_time"
+                      type="time"
+                      class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[12.5px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Duration</label>
+                  <div class="flex gap-2">
+                    {#each [5, 10, 15, 30] as mins}
+                      <label class="flex-1">
+                        <input type="radio" name="duration" value={mins} class="sr-only peer" checked={mins === 10} />
+                        <div class="text-center py-2 rounded-lg border-[1.5px] border-[#D3D1C7] text-[12px] text-[#5F5E5A] cursor-pointer
+                          peer-checked:border-[#1D9E75] peer-checked:bg-[#E1F5EE] peer-checked:text-[#085041] peer-checked:font-semibold transition-all">
+                          {mins}m
+                        </div>
+                      </label>
+                    {/each}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="w-full bg-[#1D9E75] hover:bg-[#0F6E56] text-white rounded-lg py-2.5 text-[12.5px] font-semibold transition-colors cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
+                    <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+                  </svg>
+                  Generate QR &amp; start session
+                </button>
+              </form>
+            </div>
+          {/if}
+
+          <!-- Sessions list -->
+          {#if data.attendanceSessions.length === 0}
+            <div class="flex flex-col items-center justify-center gap-3 text-center py-12">
+              <div class="w-11 h-11 bg-[#E1F5EE] rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 fill-[#1D9E75]" viewBox="0 0 24 24">
+                  <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">No sessions yet</p>
+                <p class="text-[12px] text-[#888780]">
+                  {data.isTeacher ? 'Start a session above to generate a QR code' : "Your teacher hasn't started attendance yet"}
+                </p>
+              </div>
+            </div>
+          {:else}
+            {#each data.attendanceSessions as session}
+              {@const expired = new Date() > new Date(session.expires_at)}
+              {@const isMarked = data.myAttendance.includes(session.id)}
+              <div class="bg-white border border-[#D3D1C7] rounded-xl overflow-hidden
+                {!expired ? 'border-l-[3px] border-l-[#1D9E75]' : 'border-l-[3px] border-l-[#D3D1C7]'}">
+
+                <!-- Session header -->
+                <div class="px-4 pt-4 pb-3 flex items-start justify-between">
+                  <div>
+                    <div class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">{session.label}</div>
+                    <div class="text-[11px] text-[#888780]">
+                      {new Date(session.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      · expires {new Date(session.expires_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 shrink-0 ml-3">
+                    {#if !expired}
+                      <span class="bg-[#E1F5EE] text-[#0F6E56] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">active</span>
+                    {:else}
+                      <span class="bg-[#F1EFE8] text-[#888780] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">expired</span>
+                    {/if}
+                    {#if data.isTeacher}
+                      <span class="bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">{session.count} present</span>
+                    {/if}
+                  </div>
+                </div>
+
+                <!-- Teacher: QR block -->
+                {#if data.isTeacher && !expired}
+                  <div class="mx-4 mb-4 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg p-4 flex items-center gap-5">
+                    <div class="bg-white rounded-lg p-2 shrink-0 border border-[#D3D1C7]">
+                      <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/attend/${session.token}`)}"
+                        alt="QR Code"
+                        class="w-24 h-24 block"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-[11.5px] font-semibold text-[#2C2C2A] mb-1">Students scan to mark attendance</div>
+                      <div class="text-[10.5px] text-[#888780] mb-2.5">Or share the link directly</div>
+                      <div class="font-mono text-[10.5px] text-[#534AB7] bg-[#EEEDFE] border border-[#AFA9EC] px-2.5 py-1.5 rounded-md truncate">
+                        /attend/{session.token}
+                      </div>
+                    </div>
+                  </div>
+                {/if}
+
+                <!-- Student: attendance action -->
+                {#if !data.isTeacher}
+                  <div class="px-4 pb-4">
+                    {#if isMarked}
+                      <div class="flex items-center gap-2 bg-[#E1F5EE] border border-[#5DCAA5] rounded-lg px-4 py-2.5">
+                        <svg class="w-4 h-4 fill-[#1D9E75] shrink-0" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        <span class="text-[12.5px] text-[#085041] font-semibold">You are marked present</span>
+                      </div>
+                    {:else if !expired}
+                      <a
+                        href="/attend/{session.token}"
+                        class="flex items-center justify-center gap-2 bg-[#1D9E75] hover:bg-[#0F6E56] text-white rounded-lg px-4 py-2.5 text-[12.5px] font-semibold text-center transition-colors"
+                      >
+                        <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        Mark me present
+                      </a>
+                    {:else}
+                      <div class="flex items-center gap-2 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg px-4 py-2.5">
+                        <svg class="w-4 h-4 fill-[#888780] shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span class="text-[12.5px] text-[#888780]">Session expired — not marked</span>
+                      </div>
+                    {/if}
+                  </div>
+                {/if}
+
+              </div>
+            {/each}
+          {/if}
         </div>
 
-      <!-- Students placeholder -->
+      <!-- ── STUDENTS ── -->
       {:else if activeTab === 'students'}
         <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-16">
           <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24">
-              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-            </svg>
+            <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           </div>
           <div>
             <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">students coming soon</p>
@@ -362,7 +466,6 @@
       onclick={(e) => e.stopPropagation()}
       role="presentation"
     >
-      <!-- Modal header -->
       <div class="flex items-start justify-between mb-5">
         <div>
           <h2 class="text-[15px] font-semibold text-[#2C2C2A]">New announcement</h2>
@@ -372,9 +475,7 @@
           onclick={() => showPostModal = false}
           class="w-7 h-7 rounded-full bg-[#F1EFE8] hover:bg-[#D3D1C7] flex items-center justify-center transition-colors cursor-pointer text-[#5F5E5A] ml-4 shrink-0"
         >
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </div>
 
@@ -419,15 +520,12 @@
             ></textarea>
           </div>
         </div>
-
         <div class="flex gap-3">
           <button
             type="button"
             onclick={() => showPostModal = false}
             class="flex-1 border-[1.5px] border-[#D3D1C7] rounded-lg py-2.5 text-[13px] font-medium text-[#5F5E5A] hover:bg-[#F1EFE8] transition-colors cursor-pointer"
-          >
-            Cancel
-          </button>
+          >Cancel</button>
           <button
             type="submit"
             disabled={posting}

@@ -31,15 +31,43 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .eq('class_id', params.id)
     .order('created_at', { ascending: false })
 
+  const { data: attendanceSessions } = await locals.supabase
+    .from('attendance_sessions')
+    .select('id, label, expires_at, created_at, token')
+    .eq('class_id', params.id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
   const { data: profile } = await locals.supabase
     .from('profiles')
     .select('full_name, role')
     .eq('id', locals.session.user.id)
     .single()
 
+  // For each session, get attendance count
+  const sessionsWithCount = await Promise.all(
+    (attendanceSessions ?? []).map(async (session) => {
+      const { data: records } = await locals.supabase
+        .rpc('get_attendance_records', { p_session_id: session.id })
+      return { ...session, records: records ?? [], count: records?.length ?? 0 }
+    })
+  )
+
+  // For student: get their own attendance records
+  let myAttendance: string[] = []
+  if (!isTeacher) {
+    const { data: myRecords } = await locals.supabase
+      .from('attendance_records')
+      .select('session_id')
+      .eq('student_id', locals.session.user.id)
+    myAttendance = myRecords?.map(r => r.session_id) ?? []
+  }
+
   return {
     cls,
     announcements: announcements ?? [],
+    attendanceSessions: sessionsWithCount,
+    myAttendance,
     profile,
     isTeacher
   }
@@ -53,9 +81,7 @@ export const actions: Actions = {
     const title = formData.get('title')?.toString().trim()
     const content = formData.get('content')?.toString().trim()
 
-    if (!title || !content) {
-      return { error: 'Title and content are required' }
-    }
+    if (!title || !content) return { error: 'Title and content are required' }
 
     const { error: err } = await locals.supabase.from('announcements').insert({
       class_id: params.id,
@@ -65,7 +91,37 @@ export const actions: Actions = {
     })
 
     if (err) return { error: err.message }
+    return { success: true }
+  },
 
+  startAttendance: async ({ locals, params, request }) => {
+    if (!locals.session) redirect(303, '/login')
+
+    const formData = await request.formData()
+    const label = formData.get('label')?.toString().trim() || 'Attendance'
+    const startTime = formData.get('start_time')?.toString()
+    const duration = parseInt(formData.get('duration')?.toString() ?? '10')
+
+    // Calculate expires_at from start time + duration
+    const now = new Date()
+    let startDate = new Date()
+
+    if (startTime) {
+      const [hours, minutes] = startTime.split(':').map(Number)
+      startDate.setHours(hours, minutes, 0, 0)
+      // If start time is in the past today, still use it
+    }
+
+    const expiresAt = new Date(startDate.getTime() + duration * 60000)
+
+    const { error: err } = await locals.supabase.from('attendance_sessions').insert({
+      class_id: params.id,
+      teacher_id: locals.session.user.id,
+      label,
+      expires_at: expiresAt.toISOString()
+    })
+
+    if (err) return { error: err.message }
     return { success: true }
   }
 }
