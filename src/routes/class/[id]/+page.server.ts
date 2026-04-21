@@ -31,12 +31,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .eq('class_id', params.id)
     .order('created_at', { ascending: false })
 
+
   const { data: attendanceSessions } = await locals.supabase
     .from('attendance_sessions')
     .select('id, label, expires_at, created_at, token')
     .eq('class_id', params.id)
     .order('created_at', { ascending: false })
     .limit(10)
+
+  // Fetch students using get_class_students RPC
+  const { data: students } = await locals.supabase
+    .rpc('get_class_students', { p_class_id: params.id })
 
   const { data: profile } = await locals.supabase
     .from('profiles')
@@ -67,6 +72,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     cls,
     announcements: announcements ?? [],
     attendanceSessions: sessionsWithCount,
+    students: students ?? [],
     myAttendance,
     profile,
     isTeacher

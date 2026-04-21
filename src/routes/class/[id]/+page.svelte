@@ -1,9 +1,8 @@
 <script lang="ts">
   import { enhance } from '$app/forms'
   import { createSupabaseLoadClient } from '$lib/supabase'
-  import type { PageData } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  let { data } = $props()
   const supabase = createSupabaseLoadClient(fetch)
 
   let showPostModal = $state(false)
@@ -64,8 +63,8 @@
 <div class="min-h-screen bg-[#F1EFE8] flex flex-col">
 
   <!-- Top command bar -->
-  <nav class="bg-[#534AB7] h-11 flex items-center px-3 gap-2.5 shrink-0">
-    <div class="flex items-center gap-2">
+  <nav class="bg-[#534AB7] h-11 flex items-center px-3 gap-2.5 shrink-0 min-w-0">
+    <div class="flex items-center gap-2 shrink-0">
       <div class="w-7 h-7 bg-[#3C3489] rounded-lg flex items-center justify-center shrink-0">
         <svg class="w-3.5 h-3.5 fill-[#EEEDFE]" viewBox="0 0 24 24">
           <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -75,16 +74,16 @@
         attend<span class="text-[#AFA9EC]">ify</span>
       </span>
     </div>
-    <div class="w-px h-5 bg-[#AFA9EC] opacity-40 mx-1"></div>
-    <div class="flex items-center gap-1.5 text-[12px]">
+    <div class="w-px h-5 bg-[#AFA9EC] opacity-40 mx-1 shrink-0"></div>
+    <div class="flex items-center gap-1.5 text-[12px] min-w-0 overflow-hidden">
       <a
         href={data.isTeacher ? '/dashboard/teacher' : '/dashboard/student'}
-        class="text-[#C4C0F5] hover:text-white transition-colors"
+        class="text-[#C4C0F5] hover:text-white transition-colors shrink-0"
       >My classes</a>
-      <span class="text-[#AFA9EC] opacity-60">/</span>
-      <span class="text-[#EEEDFE] font-medium">{data.cls.name}</span>
+      <span class="text-[#AFA9EC] opacity-60 shrink-0">/</span>
+      <span class="text-[#EEEDFE] font-medium truncate">{data.cls.name}</span>
     </div>
-    <div class="ml-auto flex items-center gap-2.5">
+    <div class="ml-auto flex items-center gap-2.5 shrink-0">
       <span class="text-[11px] text-[#C4C0F5] hidden sm:block">{data.profile?.full_name}</span>
       <div class="w-7 h-7 rounded-full bg-[#7F77DD] border-[1.5px] border-[#AFA9EC] flex items-center justify-center text-[10px] font-semibold text-[#EEEDFE]">
         {getInitials(data.profile?.full_name ?? '')}
@@ -100,8 +99,8 @@
 
   <div class="flex flex-1 overflow-hidden">
 
-    <!-- Icon rail -->
-    <aside class="w-14 bg-[#3C3489] flex flex-col items-center py-2 gap-0.5 shrink-0">
+    <!-- Icon rail: vertical on sm+, hidden on mobile (replaced by bottom bar) -->
+    <aside class="hidden sm:flex w-14 bg-[#3C3489] flex-col items-center py-2 gap-0.5 shrink-0">
       {#each tabs as tab}
         <button
           onclick={() => activeTab = tab.id}
@@ -123,8 +122,8 @@
       {/each}
     </aside>
 
-    <!-- Channel sidebar -->
-    <aside class="w-56 bg-white border-r border-[#D3D1C7] flex flex-col overflow-hidden shrink-0">
+    <!-- Channel sidebar: only on sm+ -->
+    <aside class="w-56 bg-white border-r border-[#D3D1C7] hidden sm:flex flex-col overflow-hidden shrink-0">
       <div class="p-3.5 border-b border-[#F1EFE8]">
         <div class="w-9 h-9 rounded-lg bg-[#EEEDFE] flex items-center justify-center mb-2.5">
           <svg class="w-[18px] h-[18px] fill-[#7F77DD]" viewBox="0 0 24 24">
@@ -162,10 +161,10 @@
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 flex flex-col overflow-hidden bg-[#F1EFE8]">
+    <main class="flex-1 flex flex-col overflow-hidden bg-[#F1EFE8] pb-14 sm:pb-0">
 
       <!-- Channel header -->
-      <div class="bg-white border-b border-[#D3D1C7] px-5 py-2.5 flex items-center gap-3 shrink-0">
+      <div class="bg-white border-b border-[#D3D1C7] px-3 sm:px-5 py-2.5 flex items-center gap-3 shrink-0">
         <div class="w-7 h-7 rounded-md bg-[#EEEDFE] flex items-center justify-center">
           <svg class="w-3.5 h-3.5 fill-[#7F77DD]" viewBox="0 0 24 24">
             <path d={activeTabMeta.icon}/>
@@ -195,7 +194,7 @@
 
       <!-- ── ANNOUNCEMENTS ── -->
       {#if activeTab === 'announcements'}
-        <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2.5">
+        <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-2.5">
           {#if data.announcements.length === 0}
             <div class="flex flex-col items-center justify-center h-full gap-3 text-center py-16">
               <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
@@ -221,11 +220,11 @@
                     <div class="w-8 h-8 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[10px] font-semibold text-[#534AB7] shrink-0">
                       {getInitials((post.profiles as any)?.full_name ?? '')}
                     </div>
-                    <div>
-                      <div class="text-[13px] font-semibold text-[#2C2C2A]">{(post.profiles as any)?.full_name}</div>
+                    <div class="min-w-0">
+                      <div class="text-[13px] font-semibold text-[#2C2C2A] truncate">{(post.profiles as any)?.full_name}</div>
                       <div class="text-[11px] text-[#888780]">{timeAgo(post.created_at)}</div>
                     </div>
-                    <span class="ml-auto bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">announcement</span>
+                    <span class="ml-auto shrink-0 bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">announcement</span>
                   </div>
                   <div class="text-[13.5px] font-semibold text-[#2C2C2A] mb-1.5">{post.title}</div>
                   <div class="text-[12.5px] text-[#5F5E5A] leading-relaxed">{post.content}</div>
@@ -243,7 +242,7 @@
           {/if}
         </div>
         {#if data.isTeacher}
-          <div class="bg-white border-t border-[#D3D1C7] px-5 py-2.5 shrink-0">
+          <div class="bg-white border-t border-[#D3D1C7] px-3 sm:px-5 py-2.5 shrink-0">
             <button
               onclick={() => showPostModal = true}
               class="w-full flex items-center gap-2.5 bg-[#F1EFE8] hover:border-[#AFA9EC] border border-[#D3D1C7] rounded-lg px-3 py-2.5 cursor-pointer transition-colors text-left"
@@ -252,7 +251,7 @@
                 {getInitials(data.profile?.full_name ?? '')}
               </div>
               <span class="text-[12px] text-[#B4B2A9] flex-1">Share something with your class…</span>
-              <div class="w-6 h-6 rounded-md bg-[#7F77DD] flex items-center justify-center">
+              <div class="w-6 h-6 rounded-md bg-[#7F77DD] flex items-center justify-center shrink-0">
                 <svg class="w-3 h-3 fill-[#EEEDFE]" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
               </div>
             </button>
@@ -273,11 +272,11 @@
 
       <!-- ── ATTENDANCE ── -->
       {:else if activeTab === 'attendance'}
-        <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
+        <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-3">
 
           <!-- Teacher: start session form -->
           {#if data.isTeacher}
-            <div class="bg-white border border-[#D3D1C7] rounded-xl p-5">
+            <div class="bg-white border border-[#D3D1C7] rounded-xl p-4 sm:p-5">
               <div class="flex items-center gap-2 mb-4">
                 <div class="w-6 h-6 rounded-md bg-[#E1F5EE] flex items-center justify-center">
                   <svg class="w-3.5 h-3.5 fill-[#1D9E75]" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -293,7 +292,8 @@
                   }
                 }}
               >
-                <div class="grid grid-cols-2 gap-3 mb-3">
+                <!-- Stacked on mobile, 2-col on sm+ -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                   <div>
                     <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Label</label>
                     <input
@@ -358,35 +358,38 @@
             </div>
           {:else}
             {#each data.attendanceSessions as session}
-              {@const expired = new Date() > new Date(session.expires_at)}
-              {@const isMarked = data.myAttendance.includes(session.id)}
-              <div class="bg-white border border-[#D3D1C7] rounded-xl overflow-hidden
-                {!expired ? 'border-l-[3px] border-l-[#1D9E75]' : 'border-l-[3px] border-l-[#D3D1C7]'}">
+            {@const expired = new Date() > new Date(session.expires_at)}
+            {@const isMarked = data.myAttendance.includes(session.id)}
 
-                <!-- Session header -->
-                <div class="px-4 pt-4 pb-3 flex items-start justify-between">
-                  <div>
-                    <div class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">{session.label}</div>
-                    <div class="text-[11px] text-[#888780]">
-                      {new Date(session.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      · expires {new Date(session.expires_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 shrink-0 ml-3">
-                    {#if !expired}
-                      <span class="bg-[#E1F5EE] text-[#0F6E56] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">active</span>
-                    {:else}
-                      <span class="bg-[#F1EFE8] text-[#888780] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">expired</span>
-                    {/if}
-                    {#if data.isTeacher}
-                      <span class="bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">{session.count} present</span>
-                    {/if}
+            <div class="bg-white border border-[#D3D1C7] rounded-xl overflow-hidden
+              {!expired ? 'border-l-[3px] border-l-[#1D9E75]' : 'border-l-[3px] border-l-[#D3D1C7]'}">
+
+              <!-- Session header -->
+              <div class="px-4 pt-4 pb-3 flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5 truncate">{session.label}</div>
+                  <div class="text-[11px] text-[#888780]">
+                    {new Date(session.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    · expires {new Date(session.expires_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  {#if !expired}
+                    <span class="bg-[#E1F5EE] text-[#0F6E56] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">active</span>
+                  {:else}
+                    <span class="bg-[#F1EFE8] text-[#888780] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">expired</span>
+                  {/if}
+                  {#if data.isTeacher}
+                    <span class="bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">{session.count} present</span>
+                  {/if}
+                </div>
+              </div>
 
-                <!-- Teacher: QR block -->
-                {#if data.isTeacher && !expired}
-                  <div class="mx-4 mb-4 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg p-4 flex items-center gap-5">
+              {#if data.isTeacher}
+
+                <!-- QR block (active only) -->
+                {#if !expired}
+                  <div class="mx-4 mb-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg p-4 flex flex-col sm:flex-row items-center gap-4">
                     <div class="bg-white rounded-lg p-2 shrink-0 border border-[#D3D1C7]">
                       <img
                         src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/attend/${session.token}`)}"
@@ -394,9 +397,9 @@
                         class="w-24 h-24 block"
                       />
                     </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-[11.5px] font-semibold text-[#2C2C2A] mb-1">Students scan to mark attendance</div>
-                      <div class="text-[10.5px] text-[#888780] mb-2.5">Or share the link directly</div>
+                    <div class="flex-1 min-w-0 w-full sm:w-auto text-center sm:text-left">
+                      <div class="text-[11.5px] font-semibold text-[#2C2C2A] mb-0.5">Students scan to mark attendance</div>
+                      <div class="text-[10.5px] text-[#888780] mb-2">Or share the direct link</div>
                       <div class="font-mono text-[10.5px] text-[#534AB7] bg-[#EEEDFE] border border-[#AFA9EC] px-2.5 py-1.5 rounded-md truncate">
                         /attend/{session.token}
                       </div>
@@ -404,57 +407,160 @@
                   </div>
                 {/if}
 
-                <!-- Student: attendance action -->
-                {#if !data.isTeacher}
-                  <div class="px-4 pb-4">
-                    {#if isMarked}
-                      <div class="flex items-center gap-2 bg-[#E1F5EE] border border-[#5DCAA5] rounded-lg px-4 py-2.5">
-                        <svg class="w-4 h-4 fill-[#1D9E75] shrink-0" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                        <span class="text-[12.5px] text-[#085041] font-semibold">You are marked present</span>
-                      </div>
-                    {:else if !expired}
-                      <a
-                        href="/attend/{session.token}"
-                        class="flex items-center justify-center gap-2 bg-[#1D9E75] hover:bg-[#0F6E56] text-white rounded-lg px-4 py-2.5 text-[12.5px] font-semibold text-center transition-colors"
-                      >
-                        <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                        Mark me present
-                      </a>
-                    {:else}
-                      <div class="flex items-center gap-2 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg px-4 py-2.5">
-                        <svg class="w-4 h-4 fill-[#888780] shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        <span class="text-[12.5px] text-[#888780]">Session expired — not marked</span>
-                      </div>
-                    {/if}
-                  </div>
-                {/if}
+                <!-- Student list -->
+                <div class="px-4 pb-4">
+                  {#if session.records && session.records.length > 0}
+                    <div class="text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-2">
+                      Present · {session.records.length}
+                    </div>
+                    <div class="space-y-1 max-h-48 overflow-y-auto">
+                      {#each session.records as record}
+                        <div class="flex items-center gap-2.5 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg px-3 py-2">
+                          <div class="w-6 h-6 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[9px] font-semibold text-[#534AB7] shrink-0">
+                            {record.full_name?.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
+                          </div>
+                          <span class="flex-1 text-[12.5px] font-medium text-[#2C2C2A] truncate">{record.full_name}</span>
+                          <span class="text-[10.5px] text-[#888780] shrink-0">
+                            {new Date(record.scanned_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <div class="w-4 h-4 rounded-full bg-[#E1F5EE] flex items-center justify-center shrink-0">
+                            <svg class="w-2.5 h-2.5 fill-[#1D9E75]" viewBox="0 0 24 24">
+                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+                  {:else}
+                    <div class="flex items-center gap-2 text-[12px] text-[#888780] py-2">
+                      <svg class="w-3.5 h-3.5 fill-[#B4B2A9] shrink-0" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                      </svg>
+                      No students have scanned in yet
+                    </div>
+                  {/if}
+                </div>
 
-              </div>
-            {/each}
+              {:else}
+
+                <!-- Student action -->
+                <div class="px-4 pb-4">
+                  {#if isMarked}
+                    <div class="flex items-center gap-2 bg-[#E1F5EE] border border-[#5DCAA5] rounded-lg px-4 py-2.5">
+                      <svg class="w-4 h-4 fill-[#1D9E75] shrink-0" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                      </svg>
+                      <span class="text-[12.5px] text-[#085041] font-semibold">You are marked present</span>
+                    </div>
+                  {:else if !expired}
+                    <a
+                      href="/attend/{session.token}"
+                      class="flex items-center justify-center gap-2 bg-[#1D9E75] hover:bg-[#0F6E56] text-white rounded-lg px-4 py-2.5 text-[12.5px] font-semibold text-center transition-colors"
+                    >
+                      <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                      </svg>
+                      Mark me present
+                    </a>
+                  {:else}
+                    <div class="flex items-center gap-2 bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg px-4 py-2.5">
+                      <svg class="w-4 h-4 fill-[#888780] shrink-0" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
+                      </svg>
+                      <span class="text-[12.5px] text-[#888780]">Session expired — not marked</span>
+                    </div>
+                  {/if}
+                </div>
+
+              {/if}
+            </div>
+          {/each}
           {/if}
         </div>
 
       <!-- ── STUDENTS ── -->
-      {:else if activeTab === 'students'}
-        <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-16">
-          <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
-            <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          </div>
-          <div>
-            <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">students coming soon</p>
-            <p class="text-[12px] text-[#888780]">this feature is being built</p>
-          </div>
+       {:else if activeTab === 'students'}
+        <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
+
+          {#if data.students.length === 0}
+            <div class="flex flex-col items-center justify-center gap-3 text-center py-16">
+              <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">No students yet</p>
+                <p class="text-[12px] text-[#888780]">
+                  Share the class code <span class="font-semibold text-[#534AB7]">{data.cls.code}</span> to get students to join
+                </p>
+              </div>
+            </div>
+          {:else}
+            <!-- Roster header -->
+            <div class="flex items-center gap-2">
+              <span class="text-[10.5px] font-semibold uppercase tracking-widest text-[#888780]">Enrolled students</span>
+              <span class="bg-[#D3D1C7] text-[#5F5E5A] text-[10px] font-semibold rounded-full px-2 py-0.5">{data.students.length}</span>
+            </div>
+
+            <!-- Student list -->
+            <div class="bg-white border border-[#D3D1C7] rounded-xl overflow-hidden">
+              {#each data.students as student, i}
+                <div class="flex items-center gap-3 px-4 py-3 {i !== data.students.length - 1 ? 'border-b border-[#F1EFE8]' : ''}">
+                  <!-- Avatar -->
+                  <div class="w-8 h-8 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[10px] font-semibold text-[#534AB7] shrink-0">
+                    {student.full_name?.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
+                  </div>
+
+                  <!-- Name + joined -->
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[13px] font-medium text-[#2C2C2A] truncate">{student.full_name}</div>
+                    <div class="text-[11px] text-[#888780]">
+                      Joined {new Date(student.joined_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                  </div>
+
+                  <!-- Active indicator -->
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <div class="w-1.5 h-1.5 rounded-full bg-[#5DCAA5]"></div>
+                    <span class="text-[10.5px] text-[#888780]">enrolled</span>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+
         </div>
       {/if}
 
     </main>
   </div>
+
+  <!-- Bottom tab bar: mobile only -->
+  <nav class="fixed bottom-0 left-0 right-0 h-14 bg-[#3C3489] flex items-center sm:hidden z-40 border-t border-[#534AB7]">
+    {#each tabs as tab}
+      <button
+        onclick={() => activeTab = tab.id}
+        class="flex-1 flex flex-col items-center justify-center gap-0.5 h-full cursor-pointer transition-colors
+          {activeTab === tab.id ? 'bg-white/15' : ''}"
+      >
+        <svg
+          class="w-[18px] h-[18px] transition-colors {activeTab === tab.id ? 'fill-[#EEEDFE]' : 'fill-[#AFA9EC]'}"
+          viewBox="0 0 24 24"
+        ><path d={tab.icon}/></svg>
+        <span class="text-[9px] font-medium leading-none {activeTab === tab.id ? 'text-[#EEEDFE]' : 'text-[#AFA9EC]'}">
+          {tab.shortLabel}
+        </span>
+      </button>
+    {/each}
+  </nav>
+
 </div>
 
 <!-- Post announcement modal -->
 {#if showPostModal}
   <div
-    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50"
     onclick={() => showPostModal = false}
     role="dialog"
     aria-modal="true"
@@ -462,7 +568,7 @@
     onkeydown={(e) => e.key === 'Escape' && (showPostModal = false)}
   >
     <div
-      class="bg-white rounded-2xl border border-[#AFA9EC] p-6 w-full max-w-lg"
+      class="bg-white rounded-t-2xl sm:rounded-2xl border border-[#AFA9EC] p-6 w-full sm:max-w-lg"
       onclick={(e) => e.stopPropagation()}
       role="presentation"
     >
