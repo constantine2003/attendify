@@ -1,7 +1,8 @@
 <script lang="ts">
   import { enhance } from '$app/forms'
   import { createSupabaseLoadClient } from '$lib/supabase'
-
+  import Navbar from '$lib/components/Navbar.svelte'
+  
   let { data } = $props()
   const supabase = createSupabaseLoadClient(fetch)
 
@@ -81,42 +82,16 @@
   }
 </script>
 
-<div class="min-h-screen bg-[#F1EFE8] flex flex-col">
+<div class="h-screen bg-[#F1EFE8] flex flex-col overflow-hidden">
 
   <!-- Top command bar -->
-  <nav class="bg-[#534AB7] h-11 flex items-center px-3 gap-2.5 shrink-0 min-w-0">
-    <div class="flex items-center gap-2 shrink-0">
-      <div class="w-7 h-7 bg-[#3C3489] rounded-lg flex items-center justify-center shrink-0">
-        <svg class="w-3.5 h-3.5 fill-[#EEEDFE]" viewBox="0 0 24 24">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-      </div>
-      <span class="text-[#EEEDFE] font-semibold text-[13px] tracking-tight hidden sm:block">
-        attend<span class="text-[#AFA9EC]">ify</span>
-      </span>
-    </div>
-    <div class="w-px h-5 bg-[#AFA9EC] opacity-40 mx-1 shrink-0"></div>
-    <div class="flex items-center gap-1.5 text-[12px] min-w-0 overflow-hidden">
-      <a
-        href={data.isTeacher ? '/dashboard/teacher' : '/dashboard/student'}
-        class="text-[#C4C0F5] hover:text-white transition-colors shrink-0"
-      >My classes</a>
-      <span class="text-[#AFA9EC] opacity-60 shrink-0">/</span>
-      <span class="text-[#EEEDFE] font-medium truncate">{data.cls.name}</span>
-    </div>
-    <div class="ml-auto flex items-center gap-2.5 shrink-0">
-      <span class="text-[11px] text-[#C4C0F5] hidden sm:block">{data.profile?.full_name}</span>
-      <div class="w-7 h-7 rounded-full bg-[#7F77DD] border-[1.5px] border-[#AFA9EC] flex items-center justify-center text-[10px] font-semibold text-[#EEEDFE]">
-        {getInitials(data.profile?.full_name ?? '')}
-      </div>
-      <button
-        onclick={handleLogout}
-        class="text-[11px] text-[#C4C0F5] hover:text-white hover:bg-white/10 transition-colors px-2 py-1 rounded cursor-pointer"
-      >
-        log out
-      </button>
-    </div>
-  </nav>
+  <Navbar
+    fullName={data.profile?.full_name ?? ''}
+    role={data.isTeacher ? 'teacher' : 'student'}
+    backHref={data.isTeacher ? '/dashboard/teacher' : '/dashboard/student'}
+    backLabel="My classes"
+    currentPage={data.cls.name}
+  />
 
   <div class="flex flex-1 overflow-hidden">
 
@@ -182,7 +157,7 @@
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 flex flex-col overflow-hidden bg-[#F1EFE8] pb-14 sm:pb-0">
+    <main class="flex-1 flex flex-col min-h-0 overflow-y-auto bg-[#F1EFE8] pb-14 sm:pb-0">
 
       <!-- Channel header -->
       <div class="bg-white border-b border-[#D3D1C7] px-3 sm:px-5 py-2.5 flex items-center gap-3 shrink-0">
@@ -215,7 +190,7 @@
 
       <!-- ── ANNOUNCEMENTS ── -->
       {#if activeTab === 'announcements'}
-        <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-2.5">
+        <div class="flex-1 px-3 sm:px-5 py-4 flex flex-col gap-2.5">
           {#if data.announcements.length === 0}
             <div class="flex flex-col items-center justify-center h-full gap-3 text-center py-16">
               <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
@@ -263,7 +238,7 @@
           {/if}
         </div>
         {#if data.isTeacher}
-          <div class="bg-white border-t border-[#D3D1C7] px-3 sm:px-5 py-2.5 shrink-0">
+          <div class="sticky bottom-0 bg-white border-t border-[#D3D1C7] px-3 sm:px-5 py-2.5 shrink-0 z-10">
             <button
               onclick={() => showPostModal = true}
               class="w-full flex items-center gap-2.5 bg-[#F1EFE8] hover:border-[#AFA9EC] border border-[#D3D1C7] rounded-lg px-3 py-2.5 cursor-pointer transition-colors text-left"
@@ -281,7 +256,7 @@
 
       <!-- ── QUIZZES ── -->
       {:else if activeTab === 'quizzes'}
-      <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
+      <div class="flex-1 px-5 py-4 flex flex-col gap-3">
 
         {#if data.isTeacher}
           <div class="bg-white border border-[#D3D1C7] rounded-xl p-5">
@@ -378,7 +353,7 @@
 
       <!-- ── ATTENDANCE ── -->
       {:else if activeTab === 'attendance'}
-        <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-3">
+        <div class="flex-1 px-3 sm:px-5 py-4 flex flex-col gap-3">
 
           <!-- Teacher: start session form -->
           {#if data.isTeacher}
@@ -401,8 +376,9 @@
                 <!-- Stacked on mobile, 2-col on sm+ -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                   <div>
-                    <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Label</label>
+                    <label for="attendance-label" class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Label</label>
                     <input
+                      id="attendance-label"
                       name="label"
                       type="text"
                       placeholder="e.g. Morning session"
@@ -410,8 +386,9 @@
                     />
                   </div>
                   <div>
-                    <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Start time</label>
+                    <label for="attendance-start-time" class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Start time</label>
                     <input
+                      id="attendance-start-time"
                       name="start_time"
                       type="time"
                       class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[12.5px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
@@ -420,7 +397,7 @@
                 </div>
 
                 <div class="mb-4">
-                  <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Duration</label>
+                  <div class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Duration</div>
                   <div class="flex gap-2">
                     {#each [5, 10, 15, 30] as mins}
                       <label class="flex-1">
@@ -585,8 +562,8 @@
         </div>
 
       <!-- ── STUDENTS ── -->
-       {:else if activeTab === 'students'}
-        <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
+      {:else if activeTab === 'students'}
+       <div class="flex-1 px-5 py-4 flex flex-col gap-3">
 
           {#if data.students.length === 0}
             <div class="flex flex-col items-center justify-center gap-3 text-center py-16">
@@ -685,6 +662,7 @@
         </div>
         <button
           onclick={() => showPostModal = false}
+          aria-label="Close modal"
           class="w-7 h-7 rounded-full bg-[#F1EFE8] hover:bg-[#D3D1C7] flex items-center justify-center transition-colors cursor-pointer text-[#5F5E5A] ml-4 shrink-0"
         >
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -714,8 +692,9 @@
       >
         <div class="space-y-4 mb-5">
           <div>
-            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Title</label>
+            <label for="announcement-title" class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Title</label>
             <input
+              id="announcement-title"
               name="title"
               type="text"
               placeholder="e.g. Quiz tomorrow — chapter 3"
@@ -723,8 +702,9 @@
             />
           </div>
           <div>
-            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Message</label>
+            <label for="announcement-content" class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Message</label>
             <textarea
+              id="announcement-content"
               name="content"
               rows={4}
               placeholder="Write your announcement here…"
@@ -750,6 +730,7 @@
     </div>
   </div>
 {/if}
+
 {#if showQuizModal}
   <div
     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50"
@@ -760,170 +741,230 @@
     onkeydown={(e) => e.key === 'Escape' && (showQuizModal = false)}
   >
     <div
-      class="bg-white rounded-t-2xl sm:rounded-2xl border border-[#AFA9EC] p-6 w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto"
+      class="bg-white rounded-t-2xl sm:rounded-2xl border border-[#AFA9EC] w-full sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
       onclick={(e) => e.stopPropagation()}
       role="presentation"
     >
-      <div class="flex items-start justify-between mb-5">
-        <div>
-          <h2 class="text-[15px] font-semibold text-[#2C2C2A]">Create quiz</h2>
-          <p class="text-[12px] text-[#888780] mt-0.5">add questions below</p>
+
+      <!-- Modal header -->
+      <div class="px-6 py-4 border-b border-[#F1EFE8] flex items-start justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-md bg-[#FAEEDA] flex items-center justify-center">
+            <svg class="w-3.5 h-3.5 fill-[#EF9F27]" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          </div>
+          <div>
+            <h2 class="text-[15px] font-semibold text-[#2C2C2A] leading-none">Create quiz</h2>
+            <p class="text-[11px] text-[#888780] mt-0.5">Add questions below</p>
+          </div>
         </div>
         <button
           onclick={() => showQuizModal = false}
+          aria-label="Close quiz modal"
           class="w-7 h-7 rounded-full bg-[#F1EFE8] hover:bg-[#D3D1C7] flex items-center justify-center transition-colors cursor-pointer text-[#5F5E5A] ml-4 shrink-0"
         >
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </div>
 
-      {#if quizError}
-        <div class="bg-[#FCEBEB] border border-[#F09595] text-[#791F1F] text-[12px] rounded-xl px-4 py-3 mb-4">{quizError}</div>
-      {/if}
+      <!-- Scrollable body -->
+      <div class="flex-1 overflow-y-auto px-6 py-5">
 
-      <form
-        method="POST"
-        action="?/createQuiz"
-        use:enhance={() => {
-          quizCreating = true
-          quizError = ''
-          return async ({ result, update }) => {
-            quizCreating = false
-            if (result.type === 'failure') {
-              quizError = (result.data as any)?.error ?? 'Something went wrong'
-            } else {
-              showQuizModal = false
-              quizQuestions = []
-              quizError = ''
-              await update()
+        {#if quizError}
+          <div class="bg-[#FCEBEB] border border-[#F09595] text-[#791F1F] text-[12px] rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
+            <span class="mt-0.5 w-4 h-4 min-w-4 rounded-full bg-[#E24B4A] flex items-center justify-center text-white text-[10px] font-bold shrink-0">!</span>
+            {quizError}
+          </div>
+        {/if}
+
+        <form
+          method="POST"
+          action="?/createQuiz"
+          id="quiz-form"
+          use:enhance={() => {
+            quizCreating = true
+            quizError = ''
+            return async ({ result, update }) => {
+              quizCreating = false
+              if (result.type === 'failure') {
+                quizError = (result.data as any)?.error ?? 'Something went wrong'
+              } else {
+                showQuizModal = false
+                quizQuestions = []
+                quizError = ''
+                await update()
+              }
             }
-          }
-        }}
-        onsubmit={() => {
-          const questionsInput = document.getElementById('quiz-questions-input') as HTMLInputElement
-          questionsInput.value = JSON.stringify(quizQuestions)
-        }}
-      >
-        <input type="hidden" name="questions" id="quiz-questions-input" value="" />
+          }}
+          onsubmit={() => {
+            const questionsInput = document.getElementById('quiz-questions-input') as HTMLInputElement
+            questionsInput.value = JSON.stringify(quizQuestions)
+          }}
+        >
+          <input type="hidden" name="questions" id="quiz-questions-input" value="" />
 
-        <div class="space-y-4 mb-5">
-          <div>
-            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Quiz title</label>
-            <input
-              name="title"
-              type="text"
-              placeholder="e.g. Chapter 3 review"
-              class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
-            />
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Description <span class="normal-case font-normal text-[#B4B2A9]">(optional)</span></label>
-            <input
-              name="description"
-              type="text"
-              placeholder="e.g. Covers vocabulary and comprehension"
-              class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
-            />
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Deadline</label>
-            <input
-              name="deadline"
-              type="datetime-local"
-              class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
-            />
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <div class="text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-3">
-            Questions ({quizQuestions.length})
-          </div>
-
-          {#each quizQuestions as q, i}
-            <div class="bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl p-4 mb-3">
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-semibold text-[#888780]">
-                  Question {i + 1} · {q.type === 'multiple_choice' ? 'Multiple choice' : 'Short answer'}
-                </span>
-                <button type="button" onclick={() => removeQuestion(i)} class="text-[11px] text-[#E24B4A] hover:underline cursor-pointer">remove</button>
-              </div>
+          <!-- Quiz details -->
+          <div class="space-y-3 mb-5">
+            <div>
+              <label for="quiz-title" class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Quiz title</label>
               <input
+                id="quiz-title"
+                name="title"
                 type="text"
-                placeholder="Question text"
-                bind:value={quizQuestions[i].text}
-                class="w-full bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] transition-all mb-2"
+                placeholder="e.g. Chapter 3 review"
+                class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
               />
-              {#if q.type === 'multiple_choice'}
-                <div class="space-y-1.5 mb-2">
-                  {#each q.choices as _, ci}
-                    <div class="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="correct_{i}"
-                        checked={quizQuestions[i].correct_answer === quizQuestions[i].choices[ci]}
-                        onchange={() => {
-                          quizQuestions[i].correct_answer = quizQuestions[i].choices[ci]
-                          quizQuestions = [...quizQuestions]
-                        }}
-                        class="shrink-0 accent-[#7F77DD]"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Choice {ci + 1}"
-                        bind:value={quizQuestions[i].choices[ci]}
-                        class="flex-1 bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-1.5 text-[12.5px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] transition-all"
-                      />
-                    </div>
-                  {/each}
-                </div>
-                <div class="text-[11px] text-[#888780]">select the radio button next to the correct answer</div>
-              {/if}
-              <div class="flex items-center gap-2 mt-2">
-                <label class="text-[11px] text-[#888780]">points:</label>
-                <input
-                  type="number"
-                  bind:value={quizQuestions[i].points}
-                  min="1"
-                  class="w-16 bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-2 py-1 text-[12px] text-center focus:outline-none focus:border-[#7F77DD] transition-all"
-                />
-              </div>
             </div>
-          {/each}
-
-          <div class="flex items-center gap-2">
-            <select
-              bind:value={newQuestionType}
-              class="flex-1 bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[12.5px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] transition-all"
-            >
-              <option value="multiple_choice">Multiple choice</option>
-              <option value="short_answer">Short answer</option>
-            </select>
-            <button
-              type="button"
-              onclick={addQuestion}
-              class="bg-[#EEEDFE] hover:bg-[#AFA9EC] text-[#534AB7] text-[12.5px] font-semibold px-3 py-2 rounded-lg transition-colors cursor-pointer"
-            >
-              + add question
-            </button>
+            <div>
+              <label for="quiz-description" class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">
+                Description <span class="normal-case font-normal text-[#B4B2A9]">(optional)</span>
+              </label>
+              <input
+                id="quiz-description"
+                name="description"
+                type="text"
+                placeholder="e.g. Covers vocabulary and comprehension"
+                class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+              />
+            </div>
+            <div>
+              <label for="quiz-deadline" class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Deadline</label>
+              <input
+                id="quiz-deadline"
+                name="deadline"
+                type="datetime-local"
+                class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+              />
+            </div>
           </div>
-        </div>
 
-        <div class="flex gap-3">
-          <button
-            type="button"
-            onclick={() => showQuizModal = false}
-            class="flex-1 border-[1.5px] border-[#D3D1C7] rounded-lg py-2.5 text-[13px] font-medium text-[#5F5E5A] hover:bg-[#F1EFE8] transition-colors cursor-pointer"
-          >cancel</button>
-          <button
-            type="submit"
-            disabled={quizCreating || quizQuestions.length === 0}
-            class="flex-1 bg-[#7F77DD] hover:bg-[#534AB7] text-white rounded-lg py-2.5 text-[13px] font-semibold transition-all disabled:opacity-50 cursor-pointer"
-          >
-            {quizCreating ? 'creating...' : 'create quiz'}
-          </button>
-        </div>
-      </form>
+          <!-- Questions section -->
+          <div class="border-t border-[#F1EFE8] pt-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[10.5px] font-semibold uppercase tracking-widest text-[#888780]">Questions</span>
+              {#if quizQuestions.length > 0}
+                <span class="bg-[#D3D1C7] text-[#5F5E5A] text-[10px] font-semibold rounded-full px-2 py-0.5">{quizQuestions.length}</span>
+              {/if}
+            </div>
+
+            <!-- Question cards -->
+            {#each quizQuestions as q, i}
+              <div class="bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl overflow-hidden mb-3
+                {q.type === 'multiple_choice' ? 'border-l-[3px] border-l-[#7F77DD]' : 'border-l-[3px] border-l-[#EF9F27]'}">
+
+                <!-- Question header -->
+                <div class="flex items-center justify-between px-4 py-2.5 border-b border-[#D3D1C7] bg-white">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-semibold text-[#888780]">Q{i + 1}</span>
+                    <span class="text-[10px] text-[#888780]">·</span>
+                    <span class="text-[10px] font-semibold {q.type === 'multiple_choice' ? 'text-[#534AB7]' : 'text-[#BA7517]'}">
+                      {q.type === 'multiple_choice' ? 'Multiple choice' : 'Short answer'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onclick={() => removeQuestion(i)}
+                    class="text-[11px] text-[#E24B4A] hover:bg-[#FCEBEB] px-2 py-0.5 rounded transition-colors cursor-pointer"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <div class="p-4">
+                  <!-- Question text -->
+                  <input
+                    type="text"
+                    placeholder="Question text"
+                    bind:value={quizQuestions[i].text}
+                    class="w-full bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] transition-all mb-3"
+                  />
+
+                  <!-- Choices (MC only) -->
+                  {#if q.type === 'multiple_choice'}
+                    <div class="space-y-1.5 mb-3">
+                      {#each q.choices as _, ci}
+                        <div class="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="correct_{i}"
+                            checked={quizQuestions[i].correct_answer === quizQuestions[i].choices[ci]}
+                            onchange={() => {
+                              quizQuestions[i].correct_answer = quizQuestions[i].choices[ci]
+                              quizQuestions = [...quizQuestions]
+                            }}
+                            class="shrink-0 accent-[#7F77DD]"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Choice {ci + 1}"
+                            bind:value={quizQuestions[i].choices[ci]}
+                            class="flex-1 bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-1.5 text-[12.5px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] transition-all"
+                          />
+                        </div>
+                      {/each}
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-[#888780] mb-3">
+                      <svg class="w-3 h-3 fill-[#B4B2A9]" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                      Select the radio button next to the correct answer
+                    </div>
+                  {/if}
+
+                  <!-- Points -->
+                  <div class="flex items-center gap-2">
+                    <label for="points_{i}" class="text-[10.5px] font-semibold uppercase tracking-wide text-[#888780]">Points</label>
+                    <input
+                      id="points_{i}"
+                      type="number"
+                      bind:value={quizQuestions[i].points}
+                      min="1"
+                      class="w-16 bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-2 py-1 text-[12.5px] text-center focus:outline-none focus:border-[#7F77DD] transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            {/each}
+
+            <!-- Add question row -->
+            <div class="flex items-center gap-2 mt-1">
+              <select
+                bind:value={newQuestionType}
+                class="flex-1 bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2 text-[12.5px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] transition-all"
+              >
+                <option value="multiple_choice">Multiple choice</option>
+                <option value="short_answer">Short answer</option>
+              </select>
+              <button
+                type="button"
+                onclick={addQuestion}
+                class="flex items-center gap-1.5 bg-[#EEEDFE] hover:bg-[#AFA9EC] text-[#534AB7] text-[12.5px] font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer shrink-0"
+              >
+                <svg class="w-3 h-3 fill-[#534AB7]" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add question
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Footer actions (sticky) -->
+      <div class="px-6 py-4 border-t border-[#F1EFE8] flex gap-3 shrink-0 bg-white">
+        <button
+          type="button"
+          onclick={() => showQuizModal = false}
+          class="flex-1 border-[1.5px] border-[#D3D1C7] rounded-lg py-2.5 text-[13px] font-medium text-[#5F5E5A] hover:bg-[#F1EFE8] transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          form="quiz-form"
+          disabled={quizCreating || quizQuestions.length === 0}
+          class="flex-1 bg-[#7F77DD] hover:bg-[#534AB7] text-white rounded-lg py-2.5 text-[13px] font-semibold transition-all disabled:opacity-50 cursor-pointer"
+        >
+          {quizCreating ? 'Creating…' : 'Create quiz'}
+        </button>
+      </div>
+
     </div>
   </div>
 {/if}

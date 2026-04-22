@@ -1,7 +1,8 @@
 <script lang="ts">
   import { enhance } from '$app/forms'
   import { createSupabaseLoadClient } from '$lib/supabase'
-
+  import Navbar from '$lib/components/Navbar.svelte'
+  
   let { data } = $props()
   const supabase = createSupabaseLoadClient(fetch)
 
@@ -49,37 +50,7 @@
 <div class="min-h-screen bg-[#F1EFE8] flex flex-col">
 
   <!-- Top command bar -->
-  <nav class="bg-[#534AB7] h-11 flex items-center px-4 gap-3 shrink-0">
-    <div class="flex items-center gap-2">
-      <div class="w-7 h-7 bg-[#3C3489] rounded-lg flex items-center justify-center shrink-0">
-        <svg class="w-3.5 h-3.5 fill-[#EEEDFE]" viewBox="0 0 24 24">
-          <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
-        </svg>
-      </div>
-      <span class="text-[#EEEDFE] font-semibold text-[13px] tracking-tight">
-        attend<span class="text-[#AFA9EC]">ify</span>
-      </span>
-    </div>
-
-    <div class="w-px h-5 bg-[#AFA9EC] opacity-40"></div>
-    <span class="text-[12px] text-[#C4C0F5] font-medium">My classes</span>
-
-    <div class="ml-auto flex items-center gap-2.5">
-      <span class="text-[11px] text-[#C4C0F5] hidden sm:block">{data.profile?.full_name}</span>
-      <div class="w-7 h-7 rounded-full bg-[#7F77DD] border-[1.5px] border-[#AFA9EC] flex items-center justify-center text-[10px] font-semibold text-[#EEEDFE]">
-        {initials}
-      </div>
-      <button
-        onclick={handleLogout}
-        class="text-[11px] text-[#C4C0F5] hover:text-white hover:bg-white/10 transition-colors px-2 py-1 rounded cursor-pointer flex items-center gap-1"
-      >
-        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
-          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-        </svg>
-        Log out
-      </button>
-    </div>
-  </nav>
+  <Navbar fullName={data.profile?.full_name ?? ''} role="student" />
 
   <div class="max-w-5xl mx-auto w-full px-6 py-8">
 
@@ -188,6 +159,8 @@
         </div>
         <button
           onclick={() => showModal = false}
+          aria-label="Close join class modal"
+          title="Close"
           class="w-7 h-7 rounded-full bg-[#F1EFE8] hover:bg-[#D3D1C7] flex items-center justify-center transition-colors cursor-pointer text-[#5F5E5A] ml-4 shrink-0"
         >
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">

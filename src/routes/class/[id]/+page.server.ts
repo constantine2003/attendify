@@ -236,4 +236,60 @@ export const actions: Actions = {
     })
     return { success: true }
   }
+
+  ,
+  tsupdateClass: async ({ locals, params, request }) => {
+    if (!locals.session) redirect(303, '/login')
+
+    const formData = await request.formData()
+    const name = formData.get('name')?.toString().trim()
+    const description = formData.get('description')?.toString().trim() || null
+
+    if (!name) return fail(400, { error: 'Class name is required' })
+
+    const { error } = await locals.supabase
+      .from('classes')
+      .update({ name, description })
+      .eq('id', params.id)
+      .eq('teacher_id', locals.session.user.id)
+
+    if (error) return fail(500, { error: error.message })
+    return { success: true }
+  },
+
+  deleteAnnouncement: async ({ locals, request }) => {
+    if (!locals.session) redirect(303, '/login')
+
+    const formData = await request.formData()
+    const announcementId = formData.get('announcement_id')?.toString()
+
+    const { error } = await locals.supabase
+      .from('announcements')
+      .delete()
+      .eq('id', announcementId)
+      .eq('teacher_id', locals.session.user.id)
+
+    if (error) return fail(500, { error: error.message })
+    return { success: true }
+  },
+
+  editAnnouncement: async ({ locals, request }) => {
+    if (!locals.session) redirect(303, '/login')
+
+    const formData = await request.formData()
+    const announcementId = formData.get('announcement_id')?.toString()
+    const title = formData.get('title')?.toString().trim()
+    const content = formData.get('content')?.toString().trim()
+
+    if (!title || !content) return fail(400, { error: 'Title and content are required' })
+
+    const { error } = await locals.supabase
+      .from('announcements')
+      .update({ title, content })
+      .eq('id', announcementId)
+      .eq('teacher_id', locals.session.user.id)
+
+    if (error) return fail(500, { error: error.message })
+    return { success: true }
+  }
 }
