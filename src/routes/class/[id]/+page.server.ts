@@ -18,6 +18,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     .eq('id', params.id)
     .single()
 
+    
   if (!cls) error(404, 'Class not found')
 
   const isTeacher = cls.teacher_id === locals.session.user.id
@@ -35,7 +36,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   const { data: announcements } = await locals.supabase
     .from('announcements')
-    .select('id, title, content, created_at, profiles(full_name)')
+    .select('id, title, content, created_at, teacher:profiles!announcements_teacher_id_fkey(full_name)')
     .eq('class_id', params.id)
     .order('created_at', { ascending: false })
 

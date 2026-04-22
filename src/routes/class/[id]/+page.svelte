@@ -10,6 +10,11 @@
   let posting = $state(false)
   let postError = $state('')
   let activeTab = $state('announcements')
+  let editingAnnouncement = $state<any | null>(null)
+  let editTitle = $state('')
+  let editContent = $state('')
+  let editing = $state(false)
+  let editError = $state('')
 
   function timeAgo(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime()
@@ -37,6 +42,7 @@
     { id: 'quizzes',       label: 'Quizzes',       shortLabel: 'Quizzes',  icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z' },
     { id: 'attendance',    label: 'Attendance',    shortLabel: 'Attend.',  icon: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z' },
     { id: 'students',      label: 'Students',      shortLabel: 'Students', icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z' },
+    ...(data.isTeacher ? [{ id: 'settings', label: 'Settings', shortLabel: 'Settings', icon: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z' }] : [])
   ]
 
   const activeTabMeta = $derived(tabs.find(t => t.id === activeTab)!)
@@ -81,6 +87,10 @@
     quizQuestions = quizQuestions.filter((_, idx) => idx !== i)
   }
 </script>
+
+<svelte:head> 
+  <title>{data.cls.name} | Attendify</title>
+</svelte:head>
 
 <div class="h-screen bg-[#F1EFE8] flex flex-col overflow-hidden">
 
@@ -214,24 +224,46 @@
                 <div class="bg-white border border-[#D3D1C7] hover:border-[#AFA9EC] rounded-xl p-4 transition-colors">
                   <div class="flex items-center gap-2.5 mb-3">
                     <div class="w-8 h-8 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[10px] font-semibold text-[#534AB7] shrink-0">
-                      {getInitials((post.profiles as any)?.full_name ?? '')}
+                      {getInitials(post.teacher?.[0]?.full_name ?? '')}
                     </div>
                     <div class="min-w-0">
-                      <div class="text-[13px] font-semibold text-[#2C2C2A] truncate">{(post.profiles as any)?.full_name}</div>
+                      <div class="text-[13px] font-semibold text-[#2C2C2A] truncate">{post.teacher?.[0]?.full_name ?? 'Teacher'}</div>
                       <div class="text-[11px] text-[#888780]">{timeAgo(post.created_at)}</div>
                     </div>
-                    <span class="ml-auto shrink-0 bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">announcement</span>
+                    <span class="ml-auto shrink-0 bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">Announcement</span>
                   </div>
                   <div class="text-[13.5px] font-semibold text-[#2C2C2A] mb-1.5">{post.title}</div>
                   <div class="text-[12.5px] text-[#5F5E5A] leading-relaxed">{post.content}</div>
-                  <div class="flex items-center gap-2 mt-3 pt-2.5 border-t border-[#F1EFE8]">
-                    <button class="flex items-center gap-1.5 bg-[#F1EFE8] hover:bg-[#EEEDFE] border border-[#D3D1C7] rounded-full px-2.5 py-1 text-[11px] text-[#5F5E5A] cursor-pointer transition-colors">👍</button>
-                    <button class="flex items-center gap-1.5 bg-[#F1EFE8] hover:bg-[#EEEDFE] border border-[#D3D1C7] rounded-full px-2.5 py-1 text-[11px] text-[#5F5E5A] cursor-pointer transition-colors">👀</button>
-                    <button class="ml-auto flex items-center gap-1.5 text-[11px] text-[#888780] hover:text-[#2C2C2A] hover:bg-[#F1EFE8] px-2 py-1 rounded-md transition-colors cursor-pointer">
-                      <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
-                      Reply
-                    </button>
-                  </div>
+
+                  {#if data.isTeacher}
+                    <div class="flex items-center gap-2 mt-3 pt-2.5 border-t border-[#F1EFE8]">
+                      <button
+                        onclick={() => { editingAnnouncement = post; editTitle = post.title; editContent = post.content }}
+                        class="flex items-center gap-1.5 text-[11px] text-[#888780] hover:text-[#534AB7] hover:bg-[#EEEDFE] px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        Edit
+                      </button>
+                      <form
+                        method="POST"
+                        action="?/deleteAnnouncement"
+                        use:enhance={() => {
+                          return async ({ update }) => { await update() }
+                        }}
+                        class="ml-auto"
+                      >
+                        <input type="hidden" name="announcement_id" value={post.id} />
+                        <button
+                          type="submit"
+                          class="flex items-center gap-1.5 text-[11px] text-[#888780] hover:text-[#E24B4A] hover:bg-[#FCEBEB] px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                          onclick={(e) => { if (!confirm('Delete this announcement?')) e.preventDefault() }}
+                        >
+                          <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                          Delete
+                        </button>
+                      </form>
+                    </div>
+                  {/if}
                 </div>
               {/each}
             {/each}
@@ -614,6 +646,74 @@
           {/if}
 
         </div>
+
+      {:else if activeTab === 'settings'}
+        <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-4">
+
+          <div class="bg-white border border-[#D3D1C7] rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-6 h-6 rounded-md bg-[#EEEDFE] flex items-center justify-center">
+                <svg class="w-3.5 h-3.5 fill-[#7F77DD]" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+              </div>
+              <span class="text-[13px] font-semibold text-[#2C2C2A]">Class settings</span>
+            </div>
+
+            <form
+              method="POST"
+              action="?/tsupdateClass"
+              use:enhance={() => {
+                return async ({ result, update }) => {
+                  if (result.type !== 'failure') await update()
+                }
+              }}
+            >
+              <div class="space-y-3 mb-4">
+                <div>
+                  <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Class name</label>
+                  <input
+                    name="name"
+                    type="text"
+                    value={data.cls.name}
+                    class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10.5px] font-semibold uppercase tracking-wide text-[#888780] mb-1.5">Description <span class="normal-case font-normal text-[#B4B2A9]">(optional)</span></label>
+                  <input
+                    name="description"
+                    type="text"
+                    value={data.cls.description ?? ''}
+                    placeholder="e.g. Monday & Wednesday, 8AM"
+                    class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="bg-[#7F77DD] hover:bg-[#534AB7] text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Save changes
+              </button>
+            </form>
+          </div>
+
+          <div class="bg-white border border-[#D3D1C7] rounded-xl p-5">
+            <div class="text-[13px] font-semibold text-[#2C2C2A] mb-1">Class code</div>
+            <div class="text-[12px] text-[#888780] mb-3">Share this code with students to join your class</div>
+            <div class="flex items-center gap-3">
+              <div class="bg-[#EEEDFE] text-[#534AB7] text-[18px] font-bold px-5 py-2.5 rounded-xl tracking-widest">
+                {data.cls.code}
+              </div>
+              <button
+                onclick={() => navigator.clipboard.writeText(data.cls.code)}
+                class="text-[12px] text-[#7F77DD] hover:underline cursor-pointer font-medium"
+              >
+                copy
+              </button>
+            </div>
+          </div>
+
+        </div>
       {/if}
 
     </main>
@@ -965,6 +1065,95 @@
         </button>
       </div>
 
+    </div>
+  </div>
+{/if}
+
+{#if editingAnnouncement}
+  <div
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50"
+    onclick={() => editingAnnouncement = null}
+    role="dialog"
+    aria-modal="true"
+    tabindex="-1"
+    onkeydown={(e) => e.key === 'Escape' && (editingAnnouncement = null)}
+  >
+    <div
+      class="bg-white rounded-t-2xl sm:rounded-2xl border border-[#AFA9EC] p-6 w-full sm:max-w-lg"
+      onclick={(e) => e.stopPropagation()}
+      role="presentation"
+    >
+      <div class="flex items-start justify-between mb-5">
+        <div>
+          <h2 class="text-[15px] font-semibold text-[#2C2C2A]">Edit announcement</h2>
+          <p class="text-[12px] text-[#888780] mt-0.5">update your post</p>
+        </div>
+        <button
+          onclick={() => editingAnnouncement = null}
+          class="w-7 h-7 rounded-full bg-[#F1EFE8] hover:bg-[#D3D1C7] flex items-center justify-center transition-colors cursor-pointer text-[#5F5E5A] ml-4 shrink-0"
+        >
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+
+      {#if editError}
+        <div class="bg-[#FCEBEB] border border-[#F09595] text-[#791F1F] text-[12px] rounded-xl px-4 py-3 mb-4">{editError}</div>
+      {/if}
+
+      <form
+        method="POST"
+        action="?/editAnnouncement"
+        use:enhance={() => {
+          editing = true
+          editError = ''
+          return async ({ result, update }) => {
+            editing = false
+            if (result.type === 'failure') {
+              editError = (result.data as any)?.error ?? 'Something went wrong'
+            } else {
+              editingAnnouncement = null
+              editError = ''
+              await update()
+            }
+          }
+        }}
+      >
+        <input type="hidden" name="announcement_id" value={editingAnnouncement.id} />
+        <div class="space-y-4 mb-5">
+          <div>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Title</label>
+            <input
+              name="title"
+              type="text"
+              bind:value={editTitle}
+              class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
+            />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Message</label>
+            <textarea
+              name="content"
+              rows={4}
+              bind:value={editContent}
+              class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-3 py-2.5 text-[13px] text-[#2C2C2A] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all resize-none"
+            ></textarea>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            onclick={() => editingAnnouncement = null}
+            class="flex-1 border-[1.5px] border-[#D3D1C7] rounded-lg py-2.5 text-[13px] font-medium text-[#5F5E5A] hover:bg-[#F1EFE8] transition-colors cursor-pointer"
+          >Cancel</button>
+          <button
+            type="submit"
+            disabled={editing}
+            class="flex-1 bg-[#7F77DD] hover:bg-[#534AB7] text-white rounded-lg py-2.5 text-[13px] font-semibold transition-all disabled:opacity-50 cursor-pointer"
+          >
+            {editing ? 'saving...' : 'save changes'}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 {/if}
