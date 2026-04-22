@@ -133,7 +133,7 @@
 
           <!-- Icon -->
           <div class="w-9 h-9 rounded-xl mb-3 flex items-center justify-center" style="background:{c.border}40;">
-            <svg class="w-[18px] h-[18px]" style="fill:{c.sub};" viewBox="0 0 24 24">
+            <svg class="w-4.5 h-4.5" style="fill:{c.sub};" viewBox="0 0 24 24">
               <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 12H7v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1z"/>
             </svg>
           </div>
@@ -154,7 +154,7 @@
         class="rounded-2xl p-5 border-[1.5px] border-dashed border-[#B4B2A9] hover:border-[#7F77DD] hover:bg-[#EEEDFE] transition-all flex flex-col items-center justify-center gap-3 min-h-36 cursor-pointer bg-transparent group"
       >
         <div class="w-9 h-9 rounded-full bg-[#D3D1C7] group-hover:bg-[#AFA9EC] flex items-center justify-center transition-colors">
-          <svg class="w-[18px] h-[18px] fill-[#5F5E5A] group-hover:fill-[#3C3489] transition-colors" viewBox="0 0 24 24">
+          <svg class="w-4.5 h-4.5 fill-[#5F5E5A] group-hover:fill-[#3C3489] transition-colors" viewBox="0 0 24 24">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
         </div>
