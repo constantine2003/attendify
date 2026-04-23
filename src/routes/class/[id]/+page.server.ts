@@ -110,6 +110,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     myAttendance = myRecords?.map(r => r.session_id) ?? []
   }
 
+  // Grades overview (teacher only)
+  let gradesOverview: any[] = []
+  if (isTeacher) {
+    const { data: grades } = await locals.supabase
+      .rpc('get_grades_overview', { p_class_id: params.id })
+    gradesOverview = grades ?? []
+  }
+
   return {
     cls,
     announcements: announcements ?? [],

@@ -42,7 +42,10 @@
     { id: 'quizzes',       label: 'Quizzes',       shortLabel: 'Quizzes',  icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z' },
     { id: 'attendance',    label: 'Attendance',    shortLabel: 'Attend.',  icon: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z' },
     { id: 'students',      label: 'Students',      shortLabel: 'Students', icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z' },
-    ...(data.isTeacher ? [{ id: 'settings', label: 'Settings', shortLabel: 'Settings', icon: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z' }] : [])
+    ...(data.isTeacher ? [
+      { id: 'grades',    label: 'Grades',    shortLabel: 'Grades',    icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' },
+      { id: 'settings',  label: 'Settings',  shortLabel: 'Settings',  icon: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z' }
+    ] : [])
   ]
 
   const activeTabMeta = $derived(tabs.find(t => t.id === activeTab)!)
@@ -85,6 +88,63 @@
 
   function removeQuestion(i: number) {
     quizQuestions = quizQuestions.filter((_, idx) => idx !== i)
+  }
+
+  function exportAttendanceCSV() {
+    const rows = [['Session', 'Date', 'Expires', 'Student', 'Scanned At']]
+    for (const session of data.attendanceSessions) {
+      if (session.records?.length) {
+        for (const record of session.records) {
+          rows.push([
+            session.label,
+            new Date(session.created_at).toLocaleDateString(),
+            new Date(session.expires_at).toLocaleTimeString(),
+            record.full_name,
+            new Date(record.scanned_at).toLocaleTimeString()
+          ])
+        }
+      } else {
+        rows.push([session.label, new Date(session.created_at).toLocaleDateString(), new Date(session.expires_at).toLocaleTimeString(), 'No students', ''])
+      }
+    }
+    downloadCSV(rows, `attendance-${data.cls.name}.csv`)
+  }
+
+  function exportGradesCSV() {
+    const overview = (data as any).gradesOverview as any[]
+    if (!overview?.length) return
+    const quizzes = [...new Map(overview.map((g: any) => [g.quiz_id, g.quiz_title])).entries()]
+    const students = [...new Map(overview.map((g: any) => [g.student_id, g.full_name])).entries()]
+
+    const header = ['Student', ...quizzes.map(([_, title]) => title as string), 'Total']
+    const rows: string[][] = [header]
+
+    for (const [studentId, studentName] of students) {
+      const studentGrades = overview.filter((g: any) => g.student_id === studentId)
+      let total = 0
+      let totalPossible = 0
+      const scores = quizzes.map(([quizId]) => {
+        const g = studentGrades.find((g: any) => g.quiz_id === quizId)
+        if (!g || !g.submitted_at) return 'not submitted'
+        const score = g.final_score ?? g.auto_score ?? 0
+        total += score
+        totalPossible += Number(g.total_points ?? 0)
+        return `${score}/${g.total_points ?? '?'}`
+      })
+      rows.push([studentName as string, ...scores, `${total}/${totalPossible}`])
+    }
+    downloadCSV(rows, `grades-${data.cls.name}.csv`)
+  }
+
+  function downloadCSV(rows: string[][], filename: string) {
+    const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
   }
 </script>
 
@@ -472,6 +532,22 @@
               </div>
             </div>
           {:else}
+            <!-- Export button -->
+            {#if data.attendanceSessions.length > 0 && data.isTeacher}
+              <div class="flex items-center justify-between">
+                <div class="text-[10.5px] font-semibold uppercase tracking-widest text-[#888780]">
+                  {data.attendanceSessions.length} session{data.attendanceSessions.length !== 1 ? 's' : ''}
+                </div>
+                <button
+                  onclick={exportAttendanceCSV}
+                  class="flex items-center gap-1.5 bg-[#E1F5EE] hover:bg-[#5DCAA5] text-[#085041] hover:text-white text-[12px] font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                  Export CSV
+                </button>
+              </div>
+            {/if}
+
             {#each data.attendanceSessions as session}
             {@const expired = new Date() > new Date(session.expires_at)}
             {@const isMarked = data.myAttendance.includes(session.id)}
@@ -714,8 +790,110 @@
           </div>
 
         </div>
-      {/if}
+        
+      {:else if activeTab === 'grades'}
+      <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-4">
 
+        <!-- Header + export -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-[13px] font-semibold text-[#2C2C2A]">Grades overview</div>
+            <div class="text-[11px] text-[#888780] mt-0.5">{data.students.length} students · {data.quizzes.length} quizzes</div>
+          </div>
+          <button
+            onclick={exportGradesCSV}
+            class="flex items-center gap-1.5 bg-[#EEEDFE] hover:bg-[#AFA9EC] text-[#534AB7] text-[12px] font-semibold px-3 py-2 rounded-lg transition-colors cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export CSV
+          </button>
+        </div>
+
+        {#if !(data as any).gradesOverview?.length || !data.quizzes.length}
+          <div class="flex flex-col items-center justify-center gap-3 text-center py-16">
+            <div class="w-11 h-11 bg-[#EEEDFE] rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            </div>
+            <div>
+              <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">No grades yet</p>
+              <p class="text-[12px] text-[#888780]">Create quizzes and have students submit to see grades here</p>
+            </div>
+          </div>
+        {:else}
+          {@const quizList = [...new Map(((data as any).gradesOverview as any[]).map((g: any) => [g.quiz_id, { id: g.quiz_id, title: g.quiz_title, total: g.total_points }])).values()] as any[]}
+          {@const studentList = [...new Map(((data as any).gradesOverview as any[]).map((g: any) => [g.student_id, g.full_name])).entries()] as any[]}
+
+          <!-- Grades table -->
+          <div class="bg-white border border-[#D3D1C7] rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="border-b border-[#F1EFE8]">
+                    <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-[#888780] whitespace-nowrap sticky left-0 bg-white min-w-[140px]">Student</th>
+                    {#each quizList as quiz}
+                      <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-[#888780] whitespace-nowrap min-w-[120px]">
+                        <a href="/class/{data.cls.id}/quiz/{quiz.id}" class="hover:text-[#534AB7] transition-colors">
+                          {quiz.title}
+                        </a>
+                      </th>
+                    {/each}
+                    <th class="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-[#534AB7] whitespace-nowrap">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#each studentList as [studentId, studentName], si}
+                    {@const studentGrades = ((data as any).gradesOverview as any[]).filter((g: any) => g.student_id === studentId)}
+                    {@const totalEarned = studentGrades.reduce((sum: number, g: any) => sum + (g.submitted_at ? (g.final_score ?? g.auto_score ?? 0) : 0), 0)}
+                    {@const totalPossible = studentGrades.reduce((sum: number, g: any) => sum + Number(g.total_points ?? 0), 0)}
+                    <tr class="border-b border-[#F1EFE8] last:border-0 hover:bg-[#F1EFE8] transition-colors {si % 2 === 0 ? '' : 'bg-[#FAFAF8]'}">
+                      <td class="px-4 py-3 sticky left-0 {si % 2 === 0 ? 'bg-white' : 'bg-[#FAFAF8]'} hover:bg-[#F1EFE8]">
+                        <div class="flex items-center gap-2.5">
+                          <div class="w-7 h-7 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[9px] font-semibold text-[#534AB7] shrink-0">
+                            {studentName?.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
+                          </div>
+                          <span class="text-[13px] font-medium text-[#2C2C2A] whitespace-nowrap">{studentName}</span>
+                        </div>
+                      </td>
+                      {#each quizList as quiz}
+                        {@const g = studentGrades.find((g: any) => g.quiz_id === quiz.id)}
+                        <td class="px-4 py-3">
+                          {#if !g?.submitted_at}
+                            <span class="text-[11px] text-[#B4B2A9]">—</span>
+                          {:else if g.is_graded}
+                            <div class="flex items-center gap-1.5">
+                              <span class="text-[13px] font-semibold text-[#2C2C2A]">{g.final_score ?? g.auto_score}</span>
+                              <span class="text-[11px] text-[#888780]">/ {g.total_points}</span>
+                              <div class="w-1.5 h-1.5 rounded-full bg-[#1D9E75] ml-0.5"></div>
+                            </div>
+                          {:else}
+                            <div class="flex items-center gap-1.5">
+                              <span class="text-[13px] font-semibold text-[#EF9F27]">{g.auto_score}</span>
+                              <span class="text-[11px] text-[#888780]">/ {g.total_points}</span>
+                              <div class="w-1.5 h-1.5 rounded-full bg-[#EF9F27] ml-0.5"></div>
+                            </div>
+                          {/if}
+                        </td>
+                      {/each}
+                      <td class="px-4 py-3">
+                        <span class="text-[13px] font-semibold text-[#534AB7]">{totalEarned}</span>
+                        <span class="text-[11px] text-[#888780]"> / {totalPossible}</span>
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="flex items-center gap-4 text-[11px] text-[#888780]">
+            <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#1D9E75]"></div> graded</div>
+            <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#EF9F27]"></div> needs review</div>
+            <div class="flex items-center gap-1.5"><span class="text-[#B4B2A9]">—</span> not submitted</div>
+          </div>
+        {/if}
+      </div>
+      {/if}
     </main>
   </div>
 
