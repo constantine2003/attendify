@@ -66,9 +66,17 @@ export const load = async ({ locals, params }: QuizEvent) => {
 
   let allSubmissions: any[] = []
   if (isTeacher) {
-  const { data: subs } = await locals.supabase
-    .rpc('get_quiz_submissions', { p_quiz_id: params.quizId })
-    allSubmissions = subs ?? []
+    const { data: subs } = await locals.supabase
+      .rpc('get_quiz_submissions', { p_quiz_id: params.quizId })
+
+    // Fetch answers for each submission
+    allSubmissions = await Promise.all(
+      (subs ?? []).map(async (sub: any) => {
+        const { data: subAnswers } = await locals.supabase
+          .rpc('get_quiz_submission_answers', { p_submission_id: sub.id })
+        return { ...sub, answers: subAnswers ?? [] }
+      })
+    )
   }
 
   return {

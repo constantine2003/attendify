@@ -127,34 +127,83 @@
                 </button>
 
                 {#if activeSubmission === sub.id}
-                  <div class="border-t border-[#F1EFE8] px-5 py-4 bg-[#F1EFE8]">
-                    <form
-                      method="POST"
-                      action="?/gradeSubmission"
-                      use:enhance={() => {
-                        return async ({ update }) => { await update() }
-                      }}
-                    >
-                      <input type="hidden" name="submission_id" value={sub.id} />
-                      <div class="flex items-center gap-3">
-                        <label class="text-[11px] font-semibold uppercase tracking-wide text-[#888780]">Final score</label>
-                        <input
-                          type="number"
-                          name="final_score"
-                          value={sub.final_score ?? sub.auto_score}
-                          min="0"
-                          max={totalPoints}
-                          class="w-20 bg-white border-[1.5px] border-[#D3D1C7] rounded-lg px-2 py-1.5 text-[13px] text-center focus:outline-none focus:border-[#7F77DD] transition-all"
-                        />
-                        <span class="text-[12px] text-[#888780]">/ {totalPoints}</span>
-                        <button
-                          type="submit"
-                          class="ml-auto bg-[#7F77DD] hover:bg-[#534AB7] text-white text-[12px] font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
-                        >
-                          Save grade
-                        </button>
-                      </div>
-                    </form>
+                  <div class="border-t border-[#F1EFE8] bg-[#F1EFE8]">
+
+                    <!-- Answers review -->
+                    <div class="px-5 py-4 flex flex-col gap-3">
+                      <div class="text-[10.5px] font-semibold uppercase tracking-wide text-[#888780]">Student answers</div>
+
+                      {#each (sub.answers ?? []) as ans}
+                        <div class="bg-white border border-[#D3D1C7] rounded-xl overflow-hidden
+                          {ans.is_correct === true ? 'border-l-[3px] border-l-[#1D9E75]' :
+                          ans.is_correct === false ? 'border-l-[3px] border-l-[#E24B4A]' :
+                          'border-l-[3px] border-l-[#EF9F27]'}">
+                          <div class="px-4 py-2.5 border-b border-[#F1EFE8] flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                              <span class="text-[11px] font-semibold text-[#888780]">
+                                {ans.question_type === 'multiple_choice' ? 'Multiple choice' : 'Short answer'}
+                              </span>
+                              <span class="text-[10px] text-[#B4B2A9]">· {ans.points} pts</span>
+                            </div>
+                            {#if ans.is_correct === true}
+                              <span class="text-[11px] font-semibold text-[#1D9E75] flex items-center gap-1">
+                                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                Correct · +{ans.points} pts
+                              </span>
+                            {:else if ans.is_correct === false}
+                              <span class="text-[11px] font-semibold text-[#E24B4A] flex items-center gap-1">
+                                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                                Incorrect
+                              </span>
+                            {:else}
+                              <span class="text-[11px] font-semibold text-[#EF9F27]">needs review</span>
+                            {/if}
+                          </div>
+                          <div class="px-4 py-3">
+                            <div class="text-[12.5px] font-medium text-[#2C2C2A] mb-2">{ans.question_text}</div>
+                            <div class="bg-[#F1EFE8] border border-[#D3D1C7] rounded-lg px-3 py-2 text-[13px] text-[#2C2C2A] mb-1.5">
+                              {ans.answer || '—'}
+                            </div>
+                            {#if ans.is_correct === false && ans.correct_answer}
+                              <div class="text-[11px] text-[#888780]">
+                                Correct answer: <span class="font-semibold text-[#2C2C2A]">{ans.correct_answer}</span>
+                              </div>
+                            {/if}
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+
+                    <!-- Grade form -->
+                    <div class="px-5 pb-4">
+                      <form
+                        method="POST"
+                        action="?/gradeSubmission"
+                        use:enhance={() => {
+                          return async ({ update }) => { await update() }
+                        }}
+                      >
+                        <input type="hidden" name="submission_id" value={sub.id} />
+                        <div class="bg-white border border-[#D3D1C7] rounded-xl px-4 py-3 flex items-center gap-3">
+                          <label class="text-[11px] font-semibold uppercase tracking-wide text-[#888780]">Final score</label>
+                          <input
+                            type="number"
+                            name="final_score"
+                            value={sub.final_score ?? sub.auto_score}
+                            min="0"
+                            max={totalPoints}
+                            class="w-20 bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-lg px-2 py-1.5 text-[13px] text-center focus:outline-none focus:border-[#7F77DD] transition-all"
+                          />
+                          <span class="text-[12px] text-[#888780]">/ {totalPoints}</span>
+                          <button
+                            type="submit"
+                            class="ml-auto bg-[#7F77DD] hover:bg-[#534AB7] text-white text-[12px] font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          >
+                            Save grade
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 {/if}
               </div>

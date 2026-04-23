@@ -239,7 +239,7 @@ export const actions: Actions = {
   }
 
   ,
-  tsupdateClass: async ({ locals, params, request }) => {
+  updateClass: async ({ locals, params, request }) => {
     if (!locals.session) redirect(303, '/login')
 
     const formData = await request.formData()

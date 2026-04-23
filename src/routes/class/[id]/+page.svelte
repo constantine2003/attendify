@@ -207,7 +207,7 @@
                 <svg class="w-5 h-5 fill-[#7F77DD]" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
               </div>
               <div>
-                <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">no announcements yet</p>
+                <p class="text-[13px] font-semibold text-[#2C2C2A] mb-0.5">No announcements yet</p>
                 <p class="text-[12px] text-[#888780]">
                   {data.isTeacher ? 'post something to get started' : "your teacher hasn't posted anything yet"}
                 </p>
@@ -224,10 +224,10 @@
                 <div class="bg-white border border-[#D3D1C7] hover:border-[#AFA9EC] rounded-xl p-4 transition-colors">
                   <div class="flex items-center gap-2.5 mb-3">
                     <div class="w-8 h-8 rounded-full bg-[#EEEDFE] flex items-center justify-center text-[10px] font-semibold text-[#534AB7] shrink-0">
-                      {getInitials(post.teacher?.[0]?.full_name ?? '')}
+                      {getInitials((post.teacher as any)?.full_name ?? '')}
                     </div>
                     <div class="min-w-0">
-                      <div class="text-[13px] font-semibold text-[#2C2C2A] truncate">{post.teacher?.[0]?.full_name ?? 'Teacher'}</div>
+                      <div class="text-[13px] font-semibold text-[#2C2C2A] truncate">{(post.teacher as any)?.full_name ?? 'Teacher'}</div>
                       <div class="text-[11px] text-[#888780]">{timeAgo(post.created_at)}</div>
                     </div>
                     <span class="ml-auto shrink-0 bg-[#EEEDFE] text-[#534AB7] text-[10px] font-semibold px-2.5 py-0.5 rounded-full">Announcement</span>
@@ -660,7 +660,7 @@
 
             <form
               method="POST"
-              action="?/tsupdateClass"
+              action="?/updateClass"
               use:enhance={() => {
                 return async ({ result, update }) => {
                   if (result.type !== 'failure') await update()
