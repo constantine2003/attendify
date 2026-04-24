@@ -83,6 +83,7 @@
           type="email"
           bind:value={email}
           placeholder="you@school.edu"
+          onkeydown={(e) => e.key === 'Enter' && handleLogin()}
           class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-[10px] px-3 py-2.5 text-sm text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
         />
       </div>
@@ -103,6 +104,7 @@
             type={showPassword ? 'text' : 'password'}
             bind:value={password}
             placeholder="••••••••"
+            onkeydown={(e) => e.key === 'Enter' && handleLogin()}
             class="w-full bg-[#F1EFE8] border-[1.5px] border-[#D3D1C7] rounded-[10px] px-3 py-2.5 pr-10 text-sm text-[#2C2C2A] placeholder:text-[#B4B2A9] focus:outline-none focus:border-[#7F77DD] focus:bg-white transition-all"
           />
           <button

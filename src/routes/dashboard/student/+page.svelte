@@ -199,8 +199,9 @@
         }}
       >
         <div class="mb-5">
-          <label class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Class code</label>
+          <label for="class-code" class="block text-[11px] font-semibold uppercase tracking-wide text-[#5F5E5A] mb-1.5">Class code</label>
           <input
+            id="class-code"
             name="code"
             type="text"
             maxlength={6}
