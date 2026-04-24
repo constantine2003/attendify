@@ -793,7 +793,7 @@
         
       {:else if activeTab === 'grades'}
       <div class="flex-1 overflow-y-auto px-3 sm:px-5 py-4 flex flex-col gap-4">
-
+        
         <!-- Header + export -->
         <div class="flex items-center justify-between">
           <div>
@@ -887,9 +887,9 @@
 
           <!-- Legend -->
           <div class="flex items-center gap-4 text-[11px] text-[#888780]">
-            <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#1D9E75]"></div> graded</div>
-            <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#EF9F27]"></div> needs review</div>
-            <div class="flex items-center gap-1.5"><span class="text-[#B4B2A9]">—</span> not submitted</div>
+            <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#1D9E75]"></div> Graded</div>
+            <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#EF9F27]"></div> Needs review</div>
+            <div class="flex items-center gap-1.5"><span class="text-[#B4B2A9]">—</span> Not submitted</div>
           </div>
         {/if}
       </div>

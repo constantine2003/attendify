@@ -118,12 +118,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     gradesOverview = grades ?? []
   }
 
-  return {
+   return {
     cls,
     announcements: announcements ?? [],
     attendanceSessions: sessionsWithCount,
     students: students ?? [],
     quizzes: quizzesWithMeta,
+    gradesOverview,   
     myAttendance,
     profile,
     isTeacher
