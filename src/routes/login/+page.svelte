@@ -93,9 +93,9 @@
           <label for="password" class="block text-[11.5px] font-semibold uppercase tracking-wide text-[#5F5E5A]">
             Password
           </label>
-          <a href="/forgot-password" class="text-[11px] text-[#7F77DD] hover:underline font-medium">
+          <!-- <a href="/forgot-password" class="text-[11px] text-[#7F77DD] hover:underline font-medium">
             Forgot password?
-          </a>
+          </a> -->
         </div>
         <div class="relative">
           <input

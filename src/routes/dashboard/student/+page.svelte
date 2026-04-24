@@ -47,6 +47,10 @@
   let firstName = $derived(data.profile?.full_name?.split(' ')[0] ?? '')
 </script>
 
+<svelte:head>
+  <title>Dashboard</title>
+</svelte:head>
+
 <div class="min-h-screen bg-[#F1EFE8] flex flex-col">
 
   <!-- Top command bar -->
